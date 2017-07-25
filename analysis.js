@@ -80,10 +80,11 @@ var data = {
         }
       }
     }
-    console.log("The person with the most followers is", personWithMost.name, "with", mostPeople, "followers");
+    console.log("The person following the most people is", personWithMost.name, "with", mostPeople, "people being followed");
   },
 
-  whoHasMostFollowers: function () {
+  whoHasMostFollowers: function (age) {
+    if (!age) age = 0;
 
   },
 };
