@@ -38,9 +38,9 @@ var data = {
         var followingNames = this.getNamesFromPeople(following);
         var followers = this.followsMe(people);
         var followersNames = this.getNamesFromPeople(followers);
-        console.log(this[people].name);
+        console.log("--- " + this[people].name + " ---");
         console.log("Following: " + followingNames);
-        console.log("Followers: " + followersNames + "\n");
+        console.log("Followers: " + followersNames);
       }
     }
   },
@@ -160,6 +160,17 @@ var data = {
       console.log("The person(s) with the most followers is", personWithMost, "with", mostPeople, "followers.");
     else 
       console.log("The person(s) with the most followers over age", age, "is", personWithMost, "with", mostPeople, "followers.");
+  },
+
+  //followWithoutReturn
+  //lists the people who follow someone that DOES NOT follow them in return
+  followWithoutReturn: function () {
+    for (var person in this) {
+      if (this.hasOwnProperty(person)) {
+        if (typeof this[person] == 'function') continue;
+        
+      }
+    }
   },
 };
 
