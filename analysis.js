@@ -39,8 +39,8 @@ var data = {
         var followers = this.followsMe(people);
         var followersNames = this.getNamesFromPeople(followers);
         console.log("--- " + this[people].name + " ---");
-        console.log("Following: " + followingNames);
-        console.log("Followers: " + followersNames);
+        console.log("Following: " + followingNames.join(", "));
+        console.log("Followers: " + followersNames.join(", "));
       }
     }
   },
@@ -165,19 +165,25 @@ var data = {
   //followWithoutReturn
   //lists the people who follow someone that DOES NOT follow them in return
   followWithoutReturn: function () {
+    var peopleWhoFollowWithoutReturn = []
     for (var person in this) {
       if (this.hasOwnProperty(person)) {
         if (typeof this[person] == 'function') continue;
-        
+        var noFollowBack = false;
+        var arrOfFollowing = this.getFollowing(this[person]);
+        for (var i = 0; i < arrOfFollowing.length; i++) {
+          if (!arrOfFollowing[i].follows.includes(person))
+            noFollowBack = true;
+        }
+        if (noFollowBack)
+          peopleWhoFollowWithoutReturn.push(this[person].name);
       }
     }
+    console.log("People who follow someone that does not follow them back: " + peopleWhoFollowWithoutReturn.join(", "))
   },
 };
 
 data.listPeople();
 data.whoFollowsMostPeople();
 data.whoHasMostFollowers();
-data.whoFollowsMostPeople(30);
-data.whoHasMostFollowers(30);
-data.whoFollowsMostPeople(40);
-data.whoHasMostFollowers(40);
+data.followWithoutReturn();
