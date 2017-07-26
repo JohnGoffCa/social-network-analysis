@@ -78,7 +78,8 @@ var data = {
     return result;
   },
 
-  whoFollowsMostPeople: function () {
+  whoFollowsMostPeople: function (age) {
+    if (!age) age = 0;
     var mostPeople;
     var personWithMost;
     for (var people in this) {
@@ -87,11 +88,19 @@ var data = {
         var arrOfFollowing = this.getFollowing(this[people]);
         if (!mostPeople) {
           mostPeople = arrOfFollowing.length
-          personWithMost = this[people]
-        } else if (arrOfFollowing.length > mostPeople) {
-          mostPeople = arrOfFollowing.length
-          personWithMost = this[people]
-        }
+          personWithMost = this[people].name;
+        } else {
+          var currentFollowers = arrOfFollowing.length;
+          for (var i = 0; i < arrOfFollowing.length; i++) {
+            if (age && age < arrOfFollowing[i].age)
+              mostPeople--
+          }
+          if (arrOfFollowing.length > mostPeople) {
+            mostPeople = arrOfFollowing.length
+            personWithMost = this[people].name;
+          } else if (arrOfFollowing.length === mostPeople)
+            personWithMost += ", " + this[people].name;
+        } 
       }
     }
     console.log("The person following the most people is", personWithMost.name, "with", mostPeople, "people being followed.");
