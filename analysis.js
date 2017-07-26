@@ -34,9 +34,13 @@ var data = {
     for (var people in this) {
       if (this.hasOwnProperty(people)) {
         if (typeof this[people] == 'function') continue;
+        var following = this.getFollowing(this[people]);
+        var followingNames = this.getNamesFromPeople(following);
+        var followers = this.followsMe(people);
+        var followersNames = this.getNamesFromPeople(followers);
         console.log(this[people].name);
-        console.log("Follows: " + this.getFollowing(this[people]));
-        console.log("Followers: " + this.followsMe(people) + "\n");
+        console.log("Following: " + followingNames);
+        console.log("Followers: " + followersNames + "\n");
       }
     }
   },
@@ -49,7 +53,7 @@ var data = {
         //console.log("person:", person);
         //console.log("IndexOf:", this[person].follows.indexOf(userID))
         if (this[person].follows.indexOf(userID) !== -1)
-          arr.push(this[person].name)
+          arr.push(this[person]);
       }
     }
     return arr;
@@ -58,11 +62,21 @@ var data = {
   getFollowing: function (user) {
     var arr = [];
     user.follows.forEach((userID) => {
-      arr.push(this[userID].name);
+      arr.push(this[userID]);
     });
 
     return arr;
-  }, 
+  },
+
+  //getNamesFromPeople
+  //takes in an array of person objects and returns an array of their names
+  getNamesFromPeople: function(arr) {
+    var result = [];
+    for (var i = 0; i < arr.length; i++) {
+      result.push(arr[i].name);
+    }
+    return result;
+  },
 
   whoFollowsMostPeople: function () {
     var mostPeople;
@@ -80,14 +94,46 @@ var data = {
         }
       }
     }
-    console.log("The person following the most people is", personWithMost.name, "with", mostPeople, "people being followed");
+    console.log("The person following the most people is", personWithMost.name, "with", mostPeople, "people being followed.");
   },
 
   whoHasMostFollowers: function (age) {
     if (!age) age = 0;
 
+    var personWithMost;
+    var mostPeople;
+
+    for (var person in this) {
+      if (this.hasOwnProperty(person)) {
+        if (typeof this[person] == 'function') continue;
+
+        var arrOfFollowers = this.followsMe(person)
+        if (!mostPeople) {
+          mostPeople = arrOfFollowers.length;
+          for (var i = 0; i < arrOfFollowers.length; i++) {
+            if (age && age < arrOfFollowers[i].age)
+              mostPeople--
+          }
+          personWithMost = this[person].name;
+        } else {
+          var currentFollowers = arrOfFollowers.length
+          for (var i = 0; i < arrOfFollowers.length; i++) {
+            if (age && age < arrOfFollowers[i].age)
+              currentFollowers--;
+          }
+          if (currentFollowers > mostPeople) {
+            mostPeople = currentFollowers;
+            personWithMost = this[person].name;
+          } else if (currentFollowers === mostPeople) {
+            personWithMost += ", " + this[person].name;
+          }
+        }
+      }
+    }
+    console.log("The person(s) with the most followers is", personWithMost, "with", mostPeople, "followers.");
   },
 };
 
 data.listPeople();
 data.whoFollowsMostPeople();
+data.whoHasMostFollowers();
