@@ -50,10 +50,21 @@ var data = {
     for (var person in this) {
       if (this.hasOwnProperty(person)) {
         if (typeof this[person] == 'function') continue;
-        //console.log("person:", person);
-        //console.log("IndexOf:", this[person].follows.indexOf(userID))
         if (this[person].follows.indexOf(userID) !== -1)
           arr.push(this[person]);
+      }
+    }
+    return arr;
+  },
+
+  //returns a list of the IDs of the people who follow the user
+  followsMeAsID: function (userID) {
+    var arr = [];
+    for (var person in this) {
+      if (this.hasOwnProperty(person)) {
+        if (typeof this[person] == 'function') continue;
+        if (this[person].follows.indexOf(userID) !== -1)
+          arr.push(person);
       }
     }
     return arr;
@@ -75,9 +86,10 @@ var data = {
     for (var i = 0; i < arr.length; i++) {
       result.push(arr[i].name);
     }
+
     return result;
   },
-
+  
   //whoFollowsMostPeople
   //takes in an optional age argument, then scans list for person who is following the most people above that age
   whoFollowsMostPeople: function (age) {
@@ -92,12 +104,16 @@ var data = {
         var arrOfFollowing = this.getFollowing(this[people]);
 
         if (!mostPeople) {
+
           mostPeople = arrOfFollowing.length
+
           for (var i = 0; i < arrOfFollowing.length; i++) {
             if (age && age > arrOfFollowing[i].age)
               mostPeople--
           }
+
           personWithMost = this[people].name;
+
         } else {
           var currentFollowers = arrOfFollowing.length;
 
@@ -132,21 +148,24 @@ var data = {
 
         var arrOfFollowers = this.followsMe(person)
         if (!mostPeople) {
+
           mostPeople = arrOfFollowers.length;
+
           for (var i = 0; i < arrOfFollowers.length; i++) {
             if (age && age > arrOfFollowers[i].age)
               mostPeople--;
           }
+
           personWithMost = this[person].name;
+
         } else {
           var currentFollowers = arrOfFollowers.length
+
           for (var i = 0; i < arrOfFollowers.length; i++) {
-            //console.log(age, ',', arrOfFollowers[i].age, arrOfFollowers[i].name);
             if (age && age > arrOfFollowers[i].age)
               currentFollowers--;
           }
-          //console.log("Current followers", currentFollowers)
-          //console.log("most people", mostPeople)
+
           if (currentFollowers > mostPeople) {
             mostPeople = currentFollowers;
             personWithMost = this[person].name;
@@ -165,25 +184,58 @@ var data = {
   //followWithoutReturn
   //lists the people who follow someone that DOES NOT follow them in return
   followWithoutReturn: function () {
+
     var peopleWhoFollowWithoutReturn = []
+
     for (var person in this) {
       if (this.hasOwnProperty(person)) {
         if (typeof this[person] == 'function') continue;
+
         var noFollowBack = false;
         var arrOfFollowing = this.getFollowing(this[person]);
+
         for (var i = 0; i < arrOfFollowing.length; i++) {
           if (!arrOfFollowing[i].follows.includes(person))
             noFollowBack = true;
         }
+
         if (noFollowBack)
           peopleWhoFollowWithoutReturn.push(this[person].name);
       }
     }
     console.log("People who follow someone that does not follow them back: " + peopleWhoFollowWithoutReturn.join(", "))
   },
+
+  //listReach
+  //lists all people and their total reach
+  listReach: function () {
+    for (var person in this) {
+      if (this.hasOwnProperty(person)) {
+        if (typeof this[person] == 'function') continue;
+
+        var reach = this.numFollowers(person);
+
+        this.followsMeAsID(person).forEach((userID) => {
+          reach += this.numFollowers(userID);
+        });
+
+        console.log(this[person].name + ", reach: " + reach)
+      }
+    }
+  },
+
+  //numFollowers
+  //gets the number of followers of the specified person
+  numFollowers: function (user) {
+    var arrFollowsMe = this.followsMe(user)
+    return arrFollowsMe.length;
+  },
 };
 
 data.listPeople();
 data.whoFollowsMostPeople();
 data.whoHasMostFollowers();
+data.whoFollowsMostPeople(30);
+data.whoHasMostFollowers(30);
 data.followWithoutReturn();
+data.listReach();
