@@ -78,32 +78,46 @@ var data = {
     return result;
   },
 
+  //whoFollowsMostPeople
+  //takes in an optional age argument, then scans list for person who is following the most people above that age
   whoFollowsMostPeople: function (age) {
     if (!age) age = 0;
     var mostPeople;
     var personWithMost;
+
     for (var people in this) {
       if (this.hasOwnProperty(people)) {
         if (typeof this[people] == 'function') continue;
+
         var arrOfFollowing = this.getFollowing(this[people]);
+
         if (!mostPeople) {
           mostPeople = arrOfFollowing.length
+          for (var i = 0; i < arrOfFollowing.length; i++) {
+            if (age && age > arrOfFollowing[i].age)
+              mostPeople--
+          }
           personWithMost = this[people].name;
         } else {
           var currentFollowers = arrOfFollowing.length;
+
           for (var i = 0; i < arrOfFollowing.length; i++) {
-            if (age && age < arrOfFollowing[i].age)
-              mostPeople--
+            if (age && age > arrOfFollowing[i].age)
+              currentFollowers--;
           }
-          if (arrOfFollowing.length > mostPeople) {
-            mostPeople = arrOfFollowing.length
+
+          if (currentFollowers > mostPeople) {
+            mostPeople = currentFollowers
             personWithMost = this[people].name;
-          } else if (arrOfFollowing.length === mostPeople)
+          } else if (currentFollowers === mostPeople)
             personWithMost += ", " + this[people].name;
         } 
       }
     }
-    console.log("The person following the most people is", personWithMost.name, "with", mostPeople, "people being followed.");
+    if (!age)
+      console.log("The person following the most people is", personWithMost, "with", mostPeople, "people being followed.");
+    else
+      console.log("The person following the most people over age", age, "is", personWithMost, "with", mostPeople, "people being followed.");
   },
 
   whoHasMostFollowers: function (age) {
@@ -120,16 +134,19 @@ var data = {
         if (!mostPeople) {
           mostPeople = arrOfFollowers.length;
           for (var i = 0; i < arrOfFollowers.length; i++) {
-            if (age && age < arrOfFollowers[i].age)
-              mostPeople--
+            if (age && age > arrOfFollowers[i].age)
+              mostPeople--;
           }
           personWithMost = this[person].name;
         } else {
           var currentFollowers = arrOfFollowers.length
           for (var i = 0; i < arrOfFollowers.length; i++) {
-            if (age && age < arrOfFollowers[i].age)
+            //console.log(age, ',', arrOfFollowers[i].age, arrOfFollowers[i].name);
+            if (age && age > arrOfFollowers[i].age)
               currentFollowers--;
           }
+          //console.log("Current followers", currentFollowers)
+          //console.log("most people", mostPeople)
           if (currentFollowers > mostPeople) {
             mostPeople = currentFollowers;
             personWithMost = this[person].name;
@@ -139,10 +156,17 @@ var data = {
         }
       }
     }
-    console.log("The person(s) with the most followers is", personWithMost, "with", mostPeople, "followers.");
+    if (!age)
+      console.log("The person(s) with the most followers is", personWithMost, "with", mostPeople, "followers.");
+    else 
+      console.log("The person(s) with the most followers over age", age, "is", personWithMost, "with", mostPeople, "followers.");
   },
 };
 
 data.listPeople();
 data.whoFollowsMostPeople();
 data.whoHasMostFollowers();
+data.whoFollowsMostPeople(30);
+data.whoHasMostFollowers(30);
+data.whoFollowsMostPeople(40);
+data.whoHasMostFollowers(40);
